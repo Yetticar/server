@@ -633,72 +633,6 @@ static LEX_STRING spider_init_queries[] = {
     "    algorithm=copy, lock=shared;"
     "end if;"
   )},
-  {C_STRING_WITH_LEN(
-  "if @server_name = 'MariaDB' and"
-  "  ("
-  "    @server_major_version > 10 or"
-  "    ("
-  "      @server_major_version = 10 and"
-  "      @server_minor_version >= 7"
-  "    )"
-  "  )"
-  "then"
-  "  /* table for ddl pushdown */"
-  "  create table if not exists mysql.spider_rewrite_tables("
-  "    table_id bigint unsigned not null auto_increment,"
-  "    db_name char(64) not null default '',"
-  "    table_name char(64) not null default '',"
-  "    primary key (table_id),"
-  "    unique uk1(db_name, table_name)"
-  "  ) engine=Aria transactional=1 default charset=utf8 collate=utf8_bin;"
-  "  create table if not exists mysql.spider_rewrite_table_tables("
-  "    table_id bigint unsigned not null,"
-  "    partition_id bigint unsigned not null auto_increment,"
-  "    partition_method varchar(18) default '',"
-  "    partition_expression varchar(64) default '',"
-  "    subpartition_method varchar(12) default '',"
-  "    subpartition_expression varchar(64) default '',"
-  "    connection_str text not null default '',"
-  "    comment_str text not null default '',"
-  "    primary key (table_id, partition_id),"
-  "    unique uk1(table_id, partition_method, partition_expression,"
-  "      subpartition_method, subpartition_expression)"
-  "  ) engine=Aria transactional=1 default charset=utf8 collate=utf8_bin;"
-  "  create table if not exists mysql.spider_rewrite_table_partitions("
-  "    table_id bigint unsigned not null,"
-  "    partition_id bigint unsigned not null,"
-  "    partition_ordinal_position bigint unsigned not null auto_increment,"
-  "    partition_name varchar(64) not null default '',"
-  "    partition_description varchar(64) not null default '',"
-  "    connection_str text not null default '',"
-  "    comment_str text not null default '',"
-  "    primary key (table_id, partition_id, partition_ordinal_position),"
-  "    unique key uk1 (table_id, partition_id, partition_name)"
-  "  ) engine=Aria transactional=1 default charset=utf8 collate=utf8_bin;"
-  "  create table if not exists mysql.spider_rewrite_table_subpartitions("
-  "    table_id bigint unsigned not null,"
-  "    partition_id bigint unsigned not null,"
-  "    partition_ordinal_position bigint unsigned not null,"
-  "    subpartition_ordinal_position bigint unsigned not null"
-  "      auto_increment,"
-  "    subpartition_name varchar(64) not null default '',"
-  "    subpartition_description varchar(64) not null default '',"
-  "    connection_str text not null default '',"
-  "    comment_str text not null default '',"
-  "    primary key (table_id, partition_id, partition_ordinal_position,"
-  "      subpartition_ordinal_position),"
-  "    unique key uk1 (table_id, partition_id, partition_ordinal_position,"
-  "      subpartition_name)"
-  "  ) engine=Aria transactional=1 default charset=utf8 collate=utf8_bin;"
-  "  create table if not exists mysql.spider_rewritten_tables("
-  "    db_name char(64) not null,"
-  "    table_name char(64) not null,"
-  "    table_id bigint unsigned not null,"
-  "    partition_id bigint unsigned not null,"
-  "    primary key (db_name, table_name, table_id, partition_id)"
-  "  ) engine=Aria transactional=1 default charset=utf8 collate=utf8_bin;"
-  "end if;"
-  )},
 /*
   Fix for version 3.4
 */
@@ -720,36 +654,47 @@ static LEX_STRING spider_init_queries[] = {
   )},
   {C_STRING_WITH_LEN(
     "alter table mysql.spider_link_mon_servers"
-    "  add column if not exists filedsn text default null after dsn;"
+    "  add column if not exists filedsn text default null after dsn,"
+    "  algorithm=copy, lock=shared;"
   )},
   {C_STRING_WITH_LEN(
     "alter table mysql.spider_tables"
-    "  add column if not exists filedsn text default null after dsn;"
+    "  add column if not exists filedsn text default null after dsn,"
+    "  algorithm=copy, lock=shared;"
   )},
   {C_STRING_WITH_LEN(
     "alter table mysql.spider_xa_failed_log"
-    "  add column if not exists filedsn text default null after dsn;"
+    "  add column if not exists filedsn text default null after dsn,"
+    "  algorithm=copy, lock=shared;"
   )},
   {C_STRING_WITH_LEN(
     "alter table mysql.spider_xa_member"
-    "  add column if not exists filedsn text default null after dsn;"
+    "  add column if not exists filedsn text default null after dsn,"
+    "  algorithm=copy, lock=shared;"
   )},
   {C_STRING_WITH_LEN(
     "alter table mysql.spider_link_mon_servers"
-    "  add column if not exists driver char(64) default null after filedsn;"
+    "  add column if not exists driver char(64) default null after filedsn,"
+    "  algorithm=copy, lock=shared;"
   )},
   {C_STRING_WITH_LEN(
     "alter table mysql.spider_tables"
-    "  add column if not exists driver char(64) default null after filedsn;"
+    "  add column if not exists driver char(64) default null after filedsn,"
+    "  algorithm=copy, lock=shared;"
   )},
   {C_STRING_WITH_LEN(
     "alter table mysql.spider_xa_failed_log"
-    "  add column if not exists driver char(64) default null after filedsn;"
+    "  add column if not exists driver char(64) default null after filedsn,"
+    "  algorithm=copy, lock=shared;"
   )},
   {C_STRING_WITH_LEN(
     "alter table mysql.spider_xa_member"
-    "  add column if not exists driver char(64) default null after filedsn;"
+    "  add column if not exists driver char(64) default null after filedsn,"
+    "  algorithm=copy, lock=shared;"
   )},
+/*
+  Install UDFs
+*/
   {C_STRING_WITH_LEN(
     "set @win_plugin := IF(@@version_compile_os like 'Win%', 1, 0);"
   )},
